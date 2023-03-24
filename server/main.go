@@ -17,6 +17,11 @@ func main() {
 		return nil
 	})
 
+	server.OnEvent("/", "message", func (s socketio.Conn, msg string) error {
+		log.Println(msg)
+		return nil
+	})
+
 	server.OnDisconnect("/", func(s socketio.Conn, reason string) {
 		log.Println("closed", reason)
 	})
@@ -27,12 +32,12 @@ func main() {
 		}
 	}()
 	defer server.Close()
-	
+
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, "Pong\n")
 	})
-	router.GET("/socket.io/*any", gin.WrapH(server))
-	router.POST("/socket.io/*any", gin.WrapH(server))
+	router.GET("/socket/*any", gin.WrapH(server))
+	router.POST("/socket/*any", gin.WrapH(server))
 
 	if err := router.Run(":8000"); err != nil {
 		log.Fatal("failed run app: ", err)
